@@ -1,41 +1,41 @@
 from cmu_112_graphics import *
+from Blocks import Block
 
 
 def appStarted(app):
-    app.coords = (300, 200)
-    app.pickedUp = False
+    app.blocks = []
 
 
-def mouseOnBlock(app, x, y):
-    # basic rectangle collision detection
-    if app.coords[0] - 50 < x < app.coords[0] + 50 and app.coords[1] - 50 < y < app.coords[1] + 50:
+def mouseOnBlock(block, x, y):
+    # basic rectangle collision detection to see if the mouse is in the block
+    if block.x - 50 < x < block.x + 50 and block.y - 20 < y < block.y + 20:
         return True
     return False
 
 
 def mousePressed(app, event):
-    if mouseOnBlock(app, event.x, event.y):
-        app.pickedUp = True
-        print("picked Up Object")
+    dragging = False
+    for block in app.blocks:
+        if mouseOnBlock(block, event.x, event.y):
+            dragging = True
+            block.pickedUp = True
+
+    if not dragging:
+        block = Block(event.x, event.y)
+        app.blocks.append(block)
 
 
 def mouseDragged(app, event):
-    if app.pickedUp:
-        app.coords = (event.x, event.y)
-
-
-# def mouseMoved(app, event):
-#     print("moving mouse")
-#     print(app.pickedUp)
-#     if app.pickedUp:
-#         print("moving object")
-#         app.coords = (event.x, event.y)
+    for block in app.blocks:
+        if block.pickedUp:
+            block.x = event.x
+            block.y = event.y
 
 
 def mouseReleased(app, event):
-    if app.pickedUp:
-        print("Object Released")
-        app.pickedUp = False
+    for block in app.blocks:
+        if block.pickedUp:
+            block.pickedUp = False
 
 
 def keyPressed(app, event):
@@ -43,8 +43,9 @@ def keyPressed(app, event):
 
 
 def redrawAll(app, canvas):
-    canvas.create_rectangle(app.coords[0] - 50, app.coords[1] -
-                            50, app.coords[0] + 50, app.coords[1] + 50, fill="black")
+    for block in app.blocks:
+        canvas.create_rectangle(
+            block.x - 50, block.y - 20, block.x + 50, block.y + 20, fill=block.fill)
 
 
 runApp(width=600, height=400)
