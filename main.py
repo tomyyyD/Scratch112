@@ -1,5 +1,5 @@
 from cmu_112_graphics import *
-from guiClasses import Button
+from guiClasses.Button import Button
 
 
 def appStarted(app):
@@ -9,25 +9,22 @@ def appStarted(app):
 
 
 def createGui(app):
-    functionButton = Button("Function", "yellow", 10, 45, 140, 75, 0)
-    app.buttons.append(functionButton)
-    returnButton = Button("Return", "lightblue", 10, 85, 140, 115, 1)
-    app.buttons.append(returnButton)
-    variableButton = Button("Variable", "red", 10, 125, 140, 155, 2)
-    app.buttons.append(variableButton)
-    operationButton = Button("Operation", "Green", 10, 165, 140, 195, 3)
-    app.buttons.append(operationButton)
-    conditionalBlock = Button("Conditional", "pink", 10, 205, 140, 235, 4)
-    app.buttons.append(conditionalBlock)
-    forLoopBlock = Button("For Loop", "violet", 10, 245, 140, 275, 5)
-    app.buttons.append(forLoopBlock)
-    printBlock = Button("Print", "orange", 10, 285, 140, 315, 6)
-    app.buttons.append(printBlock)
+    buttonList = [("Function", "yellow"), ("Return", "lightblue"),
+                  ("Variable", "red"), ("Operation", "green"),
+                  ("Conditional", "pink"), ("For Loop", "violet"),
+                  ("Print", "orange")]
+    startX = 45
+    index = 0
+    for button in buttonList:
+        button = Button(button[0], button[1], 10, startX +
+                        40 * index, 140, startX + 30 + 40 * index, index)
+        app.buttons.append(button)
+        index += 1
 
 
 def mouseOnBlock(block, x, y):
     # basic rectangle collision detection to see if the mouse is in the block
-    if block.x - 50 < x < block.x + 50 and block.y - 20 < y < block.y + 20:
+    if block.x - block.width//2 < x < block.x + block.width//2 and block.y - 20 < y < block.y + 20:
         return True
     return False
 
@@ -43,18 +40,26 @@ def onCreateArrow(block, mx, my):
 
 
 def mousePressed(app, event):
-    dragging = False
     for block in reversed(app.blocks):
+        # moving blocks with cursor
         if mouseOnBlock(block, event.x, event.y):
+            editting = False
+            # linking blocks together
             if onCreateArrow(block, event.x, event.y):
                 pass
-            dragging = True
-            block.pickedUp = True
+            for textBox in block.textBoxes:
+                if mouseOnRectangle(event.x, event.y, textBox.coords):
+                    textBox.setText(app)
+                    editting = True
+                    break
+            if not editting:
+                block.pickedUp = True
+                # break so we only move one block at a time
             break
 
     for button in app.buttons:
         if mouseOnRectangle(event.x, event.y, button.coords):
-            button.onClick(app, event)
+            button.onClick(app)
 
     if event.x < 150:
         return

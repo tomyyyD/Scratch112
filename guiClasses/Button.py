@@ -8,7 +8,7 @@ class Button:
         self.coords = [[x1, y1], [x2, y2]]
         self.block = block
 
-    def draw(self, app, canvas):
+    def draw(self, app, canvas) -> None:
         canvas.create_rectangle(
             self.coords[0], self.coords[1], fill=self.color, outline="black", width=2)
         midX = (self.coords[0][0] + self.coords[1][0])//2
@@ -16,7 +16,7 @@ class Button:
         canvas.create_text(midX, midY, text=self.text,
                            fill="black", font="Times 20")
 
-    def onClick(self, app, event):
+    def onClick(self, app) -> None:
         match self.block:
             case 0:
                 app.blocks.append(FunctionBlock(
@@ -32,4 +32,4 @@ class Button:
             case 5:
                 app.blocks.append(ForLoopBlock(250, 100, 0))
             case 6:
-                app.blocks.append(PrintBlock(150, 100, ""))
+                app.blocks.append(PrintBlock(250, 100, ""))

@@ -1,31 +1,41 @@
+from guiClasses.TextBox import TextBox
+
+
 class Block:
     def __init__(self, x, y) -> None:
         self.x = x
         self.y = y
         self.pickedUp = False
         self.fill = "green"
+        self.width = 150
+        self.textBoxes = []
 
     def draw(self, app, canvas):
-        canvas.create_rectangle(self.x - 75, self.y - 20, self.x +
-                                75, self.y + 20, fill=self.fill, outline="black", width=2)
+        canvas.create_rectangle(self.x - self.width//2, self.y - 20, self.x +
+                                self.width//2, self.y + 20, fill=self.fill, outline="black", width=2)
 
 
 class FunctionBlock(Block):
     def __init__(self, x, y, name) -> None:
         super().__init__(x, y)
-        self.name = name
+        # self.name = name
         self.fill = "yellow"
-        self.listChildren = ""
+        self.nameInput = TextBox(x, y, name)
+        self.name = self.nameInput.getText()
+        self.width = self.nameInput.width + 100
+        self.textBoxes.append(self.nameInput)
+        self.firstChild = None
 
     def setName(self, input):
         self.name = input
 
     def draw(self, app, canvas):
+        self.width = self.nameInput.width + 100
         super().draw(app, canvas)
-        # canvas.create_rectangle(self.x - 75, self.y - 20, self.x +
-        #                         75, self.y + 20, fill=self.fill, outline="black", width=2)
-        canvas.create_text(self.x - 25, self.y, text=self.name,
-                           fill="black", font="Times 20")
+        self.nameInput.draw(app, canvas, self.x - 25, self.y)
+
+    def linkBlock(self, block):
+        self.firstChild = block
 
 
 class VariableBlock(Block):
