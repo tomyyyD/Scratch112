@@ -1,6 +1,8 @@
 class TextBox:
-    def __init__(self, x, y, label) -> None:
-        self.text = label
+    def __init__(self, x, y, text, label) -> None:
+        self.text = text
+
+        self.label = label
         self.x = x
         self.y = y
         self.fontSize = 20
@@ -21,7 +23,7 @@ class TextBox:
 
     # if textbox clicked the input pops up
     def setText(self, app):
-        self.text = app.getUserInput(self.text)
+        self.text = app.getUserInput(f"Change {self.label}")
         self.setTextLength()
 
     def getText(self):

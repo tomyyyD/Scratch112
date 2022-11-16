@@ -49,6 +49,7 @@ def mousePressed(app, event):
                 pass
             for textBox in block.textBoxes:
                 if mouseOnRectangle(event.x, event.y, textBox.coords):
+                    print("hitting textbox")
                     textBox.setText(app)
                     editting = True
                     break
@@ -81,9 +82,6 @@ def mouseReleased(app, event):
 
 
 def keyPressed(app, event):
-    # if event.key == "w":
-    #     stuff = app.getUserInput("function name")
-    #     app.blocks[0].setName(stuff)
     pass
 
 

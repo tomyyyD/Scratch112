@@ -20,7 +20,7 @@ class FunctionBlock(Block):
         super().__init__(x, y)
         # self.name = name
         self.fill = "yellow"
-        self.nameInput = TextBox(x, y, name)
+        self.nameInput = TextBox(x, y, name, "Function Name")
         self.name = self.nameInput.getText()
         self.width = self.nameInput.width + 100
         self.textBoxes.append(self.nameInput)
@@ -41,9 +41,11 @@ class FunctionBlock(Block):
 class VariableBlock(Block):
     def __init__(self, x, y, name) -> None:
         super().__init__(x, y)
-        self.name = name
+        self.name = TextBox(x, y, name, "Variable Name")
+        self.textBoxes.append(self.name)
+        self.value = TextBox(x, y, "", "Variable Value")
+        self.textBoxes.append(self.value)
         self.fill = "red"
-        self.value = ""
         self.next = ""
 
     def setVariable(self, value):
@@ -54,8 +56,10 @@ class VariableBlock(Block):
 
     def draw(self, app, canvas):
         super().draw(app, canvas)
-        canvas.create_text(self.x - 25, self.y, text=self.name,
+        self.name.draw(app, canvas, self.x - 25, self.y)
+        canvas.create_text(self.x - 25, self.y, text=self.name.text,
                            fill='black', font="Times 20")
+        canvas.create_text(self.x + self.width - self.value.width - 10, self.y, text=self.value.text, fill="black", font="Times 20")
 
 
 class OperationBlock(Block):

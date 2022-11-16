@@ -24,7 +24,8 @@ class Button:
             case 1:
                 app.blocks.append(ReturnBlock(250, 100, ""))
             case 2:
-                app.blocks.append(VariableBlock(250, 100, None))
+                app.blocks.append(VariableBlock(
+                    250, 100, app.getUserInput("Variable Name?")))
             case 3:
                 app.blocks.append(OperationBlock(250, 100, 'add'))
             case 4:
