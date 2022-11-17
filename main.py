@@ -1,5 +1,9 @@
 from cmu_112_graphics import *
 from guiClasses.Button import Button
+from Blocks import *
+from interpreter import Interpreter
+import io
+import sys
 
 
 def appStarted(app):
@@ -49,7 +53,6 @@ def mousePressed(app, event):
                 pass
             for textBox in block.textBoxes:
                 if mouseOnRectangle(event.x, event.y, textBox.coords):
-                    print("hitting textbox")
                     textBox.setText(app)
                     editting = True
                     break
@@ -65,10 +68,15 @@ def mousePressed(app, event):
     if event.x < 150:
         return
 
+    # when run button pressed
+    # run interpreter passing in the blocks list
+
 
 def mouseDragged(app, event):
     for block in app.blocks:
         if block.pickedUp:
+            if block.parent is not None:
+                block.breakLink()
             block.x = event.x
             block.y = event.y
 
@@ -79,11 +87,24 @@ def mouseReleased(app, event):
             block.pickedUp = False
             if block.x < 150:
                 app.blocks.remove(block)
+                break
+            for otherBlock in app.blocks:
+                if block != otherBlock and not isinstance(block, FunctionBlock):
+                    if mouseOnRectangle(event.x, event.y, otherBlock.coords):
+                        if isinstance(otherBlock, ReturnBlock):
+                            otherBlock.value = block
+                        else:
+                            for textbox in otherBlock.textBoxes:
+                                if mouseOnRectangle(event.x, event.y, textbox.coords):
+                                    pass
+                            otherBlock.linkBlock(block)
 
 
 def keyPressed(app, event):
-    pass
-
+    if event.key == 'C':
+        interpreter = Interpreter(app.blocks)
+    if event.key == 'R':
+        exec(open('output.py').read())
 
 def drawGui(app, canvas):
     # draws the blocks tab

@@ -19,15 +19,22 @@ class Button:
     def onClick(self, app) -> None:
         match self.block:
             case 0:
-                app.blocks.append(FunctionBlock(
-                    250, 100, app.getUserInput("Function Name?")))
+                name = app.getUserInput("Function Name?")
+                if name is None:
+                    return
+                app.blocks.append(FunctionBlock(250, 100, name))
             case 1:
                 app.blocks.append(ReturnBlock(250, 100, ""))
             case 2:
-                app.blocks.append(VariableBlock(
-                    250, 100, app.getUserInput("Variable Name?")))
+                name = app.getUserInput("Variable Name?")
+                if name is None:
+                    return
+                app.blocks.append(VariableBlock(250, 100, name))
             case 3:
-                app.blocks.append(OperationBlock(250, 100, 'add'))
+                operationType = app.getUserInput("Operation Type")
+                if operationType is None:
+                    return
+                app.blocks.append(OperationBlock(250, 100, operationType))
             case 4:
                 app.blocks.append(ConditionalBlock(250, 100, "", ""))
             case 5:

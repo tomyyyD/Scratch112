@@ -1,7 +1,6 @@
 class TextBox:
     def __init__(self, x, y, text, label) -> None:
         self.text = text
-
         self.label = label
         self.x = x
         self.y = y
@@ -11,7 +10,7 @@ class TextBox:
         self.coords = [[self.x - self.width//2, self.y - 15],
                        [self.x + self.width//2, self.y + 15]]
 
-    def draw(self, app, canvas, parentX, parentY):
+    def draw(self, app, canvas, parentX, parentY) -> None:
         self.x = parentX
         self.y = parentY
         self.coords = [[self.x - self.width//2, self.y - 15],
@@ -22,9 +21,11 @@ class TextBox:
                            font=f"Times {self.fontSize}", fill="black")
 
     # if textbox clicked the input pops up
-    def setText(self, app):
-        self.text = app.getUserInput(f"Change {self.label}")
-        self.setTextLength()
+    def setText(self, app) -> None:
+        text = app.getUserInput(f"Change {self.label}")
+        if text is not None:
+            self.text = text
+            self.setTextLength()
 
     def getText(self):
         return self.text
@@ -33,9 +34,11 @@ class TextBox:
         sum = 0
         for c in self.text:
             if c.lower() in ("m", 'w'):
-                sum += 8.5
+                sum += 7.5
             if c.lower() in ('q', 'e', 'r', 'y', 'u', 'o', 'p', 'a', 's', 'd', 'g', 'h', 'k', 'z', 'x', 'c', 'v', 'b', 'n'):
-                sum += 6
+                sum += 4.5
             if c.lower() in ('t', 'i', 'f', 'j', 'l'):
-                sum += 4
-        self.width = sum * (self.fontSize//10) + 5
+                sum += 3.5
+            else:
+                sum += 5
+        self.width = sum * (self.fontSize//10) + 10
