@@ -31,13 +31,21 @@ class Button:
                     return
                 app.blocks.append(VariableBlock(250, 100, name))
             case 3:
-                operationType = app.getUserInput("Operation Type")
-                if operationType is None:
-                    return
-                app.blocks.append(OperationBlock(250, 100, operationType))
-            case 4:
                 app.blocks.append(ConditionalBlock(250, 100, "", ""))
-            case 5:
+            case 4:
                 app.blocks.append(ForLoopBlock(250, 100, 0))
-            case 6:
+            case 5:
                 app.blocks.append(PrintBlock(250, 100, ""))
+            case 6:
+                app.blocks.append(AddBlock(250, 100))
+            case 7:
+                app.blocks.append(SubtractBlock(250, 100))
+            case 8:
+                app.blocks.append(MultiplyBlock(250, 100))
+            case 9:
+                app.blocks.append(DivideBlock(250, 100))
+            case 10:
+                name = app.getUserInput("What Variable Are you Calling?")
+                if name is None:
+                    return 
+                app.blocks.append(VariableCallBlock(250, 100, name))

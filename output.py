@@ -1,8 +1,8 @@
-def doNothing():
+def doAddition():
 	x = 112
-	x = 89
-	return x
+	y = x + 112
+	z = x + y
 
 
 if __name__ == "__main__":
-	doNothing()
+	doAddition()

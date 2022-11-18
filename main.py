@@ -10,13 +10,16 @@ def appStarted(app):
     app.blocks = []
     app.buttons = []
     createGui(app)
+    app.offset  = (0,0)
 
 
 def createGui(app):
     buttonList = [("Function", "yellow"), ("Return", "lightblue"),
-                  ("Variable", "red"), ("Operation", "green"),
-                  ("Conditional", "pink"), ("For Loop", "violet"),
-                  ("Print", "orange")]
+                  ("Variable", "red"), ("Conditional", "pink"),
+                  ("For Loop", "violet"), ("Print", "orange"),
+                  ("Add", "green"), ("Subtract", "green"),
+                  ("Multiply", "green"), ("Divide", "green"),
+                  ("Variable Call", "red")]
     startX = 45
     index = 0
     for button in buttonList:
@@ -39,18 +42,11 @@ def mouseOnRectangle(mx, my, rectangle):
     return False
 
 
-def onCreateArrow(block, mx, my):
-    pass
-
-
 def mousePressed(app, event):
     for block in reversed(app.blocks):
         # moving blocks with cursor
         if mouseOnBlock(block, event.x, event.y):
             editting = False
-            # linking blocks together
-            if onCreateArrow(block, event.x, event.y):
-                pass
             for textBox in block.textBoxes:
                 if mouseOnRectangle(event.x, event.y, textBox.coords):
                     textBox.setText(app)
@@ -58,6 +54,7 @@ def mousePressed(app, event):
                     break
             if not editting:
                 block.pickedUp = True
+                app.offset = (block.x - event.x, block.y - event.y)
                 # break so we only move one block at a time
             break
 
@@ -77,27 +74,52 @@ def mouseDragged(app, event):
         if block.pickedUp:
             if block.parent is not None:
                 block.breakLink()
-            block.x = event.x
-            block.y = event.y
+            elif block.valueParent is not None:
+                block.unLinkValueBlock()
+            block.x = event.x + app.offset[0]
+            block.y = event.y + app.offset[1]
 
 
 def mouseReleased(app, event):
+    # Finds the block being moved
+    # block is being moved
     for block in app.blocks:
         if block.pickedUp:
             block.pickedUp = False
             if block.x < 150:
                 app.blocks.remove(block)
-                break
+                return
+            # links two blocks together
+            # other block is the stationary block
             for otherBlock in app.blocks:
                 if block != otherBlock and not isinstance(block, FunctionBlock):
                     if mouseOnRectangle(event.x, event.y, otherBlock.coords):
+                        # assign variable call block to return statement
+                        # return will only return variables
                         if isinstance(otherBlock, ReturnBlock):
-                            otherBlock.value = block
+                            if isinstance(block, VariableCallBlock):
+                                otherBlock.value = block
+                                return
                         else:
-                            for textbox in otherBlock.textBoxes:
-                                if mouseOnRectangle(event.x, event.y, textbox.coords):
-                                    pass
-                            otherBlock.linkBlock(block)
+                            # linking block to values of variable blocks
+                            # the only blocks that can be made a value block are Variable calls and operations
+                            if (isinstance(otherBlock, VariableBlock)) and (isinstance(block, OperationBlock) or isinstance(block, VariableCallBlock)):
+                                if len(otherBlock.textBoxes) > 1 and mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[1].coords):
+                                    otherBlock.linkValueBlock(block, 1)
+                                    return
+                            # linking blocks to sides of Operation block equation
+                            elif isinstance(otherBlock, OperationBlock) and (isinstance(block, OperationBlock) or isinstance(block, VariableCallBlock)):
+                                index = 0
+                                for textbox in otherBlock.textBoxes:
+                                    if mouseOnRectangle(event.x, event.y, textbox.coords):
+                                        otherBlock.linkValueBlock(block, index)
+                                        return 
+                                    index+=1
+                            # makes otherBlock the parent of block
+                            # variable call blocks and operation block cannot be stand alone
+                            # they must be within other blocks
+                            if not (isinstance(block, VariableCallBlock) or isinstance(block, OperationBlock)):
+                                otherBlock.linkBlock(block)
 
 
 def keyPressed(app, event):
@@ -119,8 +141,13 @@ def drawGui(app, canvas):
 
 
 def drawBlocks(app, canvas):
+    movingBlock = None
     for block in app.blocks:
+        if block.pickedUp:
+            movingBlock = block
         block.draw(app, canvas)
+    if movingBlock is not None:
+        movingBlock.draw(app, canvas)
     # for block in reversed(app.blocks):
     #     canvas.create_rectangle(
     #         block.x - 50, block.y - 20, block.x + 50, block.y + 20, fill=block.fill, outline="black", width=2)
