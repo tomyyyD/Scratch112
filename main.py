@@ -87,6 +87,32 @@ def mouseDragged(app, event):
             block.y = event.y + app.offset[1]
 
 
+def dropBlock(app, event, block: Block, otherBlock: Block):
+    # linking block to values of variable blocks
+    # the only blocks that can be made a value block are Variable calls and operations
+    if (isinstance(otherBlock, VariableBlock)) and (isinstance(block, OperationBlock) or isinstance(block, VariableCallBlock)):
+        # check child of the variable first
+        for child in block.children:
+            dropBlock(app, event, block, child)
+        if len(otherBlock.textBoxes) > 1 and otherBlock.textBoxes[1] and mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[1].coords):
+            otherBlock.linkValueBlock(block, 1)
+            return
+    # linking blocks to sides of Operation block equation
+    elif isinstance(otherBlock, OperationBlock) and (isinstance(block, OperationBlock) or isinstance(block, VariableCallBlock)):
+        index = 0
+        for textbox in otherBlock.textBoxes:
+            if textbox and mouseOnRectangle(event.x, event.y, textbox.coords):
+                otherBlock.linkValueBlock(block, index)
+                print(index)
+                return
+            index += 1
+    # makes otherBlock the parent of block
+    # variable call blocks and operation block cannot be stand alone
+    # they must be within other blocks
+    if not (isinstance(block, VariableCallBlock) or isinstance(block, OperationBlock)):
+        otherBlock.linkBlock(block)
+
+
 def mouseReleased(app, event):
     # Finds the block being moved
     # block is being moved
@@ -108,26 +134,7 @@ def mouseReleased(app, event):
                                 otherBlock.value = block
                                 return
                         else:
-                            # linking block to values of variable blocks
-                            # the only blocks that can be made a value block are Variable calls and operations
-                            if (isinstance(otherBlock, VariableBlock)) and (isinstance(block, OperationBlock) or isinstance(block, VariableCallBlock)):
-                                if len(otherBlock.textBoxes) > 1 and mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[1].coords):
-                                    otherBlock.linkValueBlock(block, 1)
-                                    return
-                            # linking blocks to sides of Operation block equation
-                            elif isinstance(otherBlock, OperationBlock) and (isinstance(block, OperationBlock) or isinstance(block, VariableCallBlock)):
-                                index = 0
-                                for textbox in otherBlock.textBoxes:
-                                    if mouseOnRectangle(event.x, event.y, textbox.coords):
-                                        otherBlock.linkValueBlock(block, index)
-                                        print(index)
-                                        return
-                                    index += 1
-                            # makes otherBlock the parent of block
-                            # variable call blocks and operation block cannot be stand alone
-                            # they must be within other blocks
-                            if not (isinstance(block, VariableCallBlock) or isinstance(block, OperationBlock)):
-                                otherBlock.linkBlock(block)
+                            dropBlock(app, event, block, otherBlock)
 
 
 def keyPressed(app, event):
