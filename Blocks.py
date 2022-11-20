@@ -10,14 +10,17 @@ class Block:
         self.width = 150
         self.height = 20
         self.textBoxes = []
-        self.coords = [[self.x - self.width//2, self.y - self.height], [self.x + self.width//2, self.y + self.height]]
+        self.coords = [[self.x - self.width//2, self.y - self.height],
+                       [self.x + self.width//2, self.y + self.height]]
         self.next = None
         self.parent = None
         self.valueParent = None
         self.children = []
+        self.parentPosition = None
 
     def updateCoords(self):
-        self.coords = [[self.x - self.width//2, self.y - self.height], [self.x + self.width//2, self.y + self.height]]
+        self.coords = [[self.x - self.width//2, self.y - self.height],
+                       [self.x + self.width//2, self.y + self.height]]
 
     def draw(self, app, canvas):
         self.updateCoords()
@@ -37,22 +40,21 @@ class Block:
         self.next.parent = self
 
     def unLinkValueBlock(self):
-        index = -1
-        for children in self.children:
-            index += 1
-            if children == self:
-                break
-        self.valueParent.resetTextBox(index)
+        print("running")
+        self.valueParent.resetTextBox(self.parentPosition)
         self.valueParent = None
 
     def linkValueBlock(self, block, pos):
         block.valueParent = self
-        self.textBoxes.pop(pos)
+        # self.textBoxes.pop(pos)
         self.children[pos] = block
+        self.textBoxes[pos] = None
+        block.parentPosition = pos
+        print(self.children)
 
     def resetTextBox(self, pos):
         self.children[pos] = TextBox(self.x, self.y, "112", "Enter Value")
-        self.textBoxes.append(self.children[pos])
+        self.textBoxes[pos] = self.children[pos]
 
 
 class FunctionBlock(Block):
@@ -77,17 +79,18 @@ class FunctionBlock(Block):
         self.nameInput.draw(app, canvas, self.x - 25, self.y)
 
 # variable addignment block
+
+
 class VariableBlock(Block):
     def __init__(self, x, y, name) -> None:
         super().__init__(x, y)
-        self.name = TextBox(x, y, name, "Variable Name")
-        self.textBoxes.append(self.name)
+        self.children = [TextBox(x, y, name, "Variable Name"), TextBox(
+            x, y, "112", "Variable Value")]
+        self.textBoxes = [self.children[0], self.children[1]]
 
-        #self.value should be able to be an operation block or a textbox
-        self.value = TextBox(x, y, "112", "Variable Value")
-        self.textBoxes.append(self.value)
+        # self.value should be able to be an operation block or a textbox
         self.fill = "red"
-        self.children.extend([self.name, self.value])
+        # self.children.extend([self.name, self.value])
 
     def updateWidth(self):
         self.width = self.children[0].width + self.children[1].width + 75
@@ -97,14 +100,18 @@ class VariableBlock(Block):
         # value is children[1]
         super().draw(app, canvas)
         self.updateWidth()
-        canvas.create_text(self.x - self.width//2 + self.children[0].width + 37, self.y, text="=", font="Times 20", fill="black")
-        self.children[0].draw(app, canvas, self.x - self.width//2 + self.children[0].width//2 + 25, self.y)
+        canvas.create_text(self.x - self.width//2 +
+                           self.children[0].width + 37, self.y, text="=", font="Times 20", fill="black")
+        self.children[0].draw(app, canvas, self.x - self.width //
+                              2 + self.children[0].width//2 + 25, self.y)
         if isinstance(self.children[1], OperationBlock):
-            self.children[1].x =  self.x + self.width//2 - self.children[1].width//2 - 25
+            self.children[1].x = self.x + self.width//2 - \
+                self.children[1].width//2 - 25
             self.children[1].y = self.y
             self.children[1].draw(app, canvas)
         else:
-            self.children[1].draw(app, canvas, self.x + self.width//2 - self.children[1].width//2 - 25, self.y)
+            self.children[1].draw(
+                app, canvas, self.x + self.width//2 - self.children[1].width//2 - 25, self.y)
 
     # def resetTextBox(self):
     #     self.value = TextBox(self.x, self.y, "112", "Enter Value")
@@ -112,20 +119,24 @@ class VariableBlock(Block):
     #     self.children.pop()
     #     self.children.append(self.value)
 
-#variable calling Block
+# variable calling Block
+
+
 class VariableCallBlock(Block):
     def __init__(self, x, y, name) -> None:
         super().__init__(x, y)
         self.name = name
 
-        #self.value should be able to be an operation block or a textbox
+        # self.value should be able to be an operation block or a textbox
         self.fill = "red"
 
         self.width = len(self.fill) * 5 + 50
 
     def draw(self, app, canvas):
         super().draw(app, canvas)
-        canvas.create_text(self.x, self.y, text=self.name, font="Times 20", fill="black")
+        canvas.create_text(self.x, self.y, text=self.name,
+                           font="Times 20", fill="black")
+
 
 class OperationBlock(Block):
     def __init__(self, x, y) -> None:
@@ -143,34 +154,43 @@ class OperationBlock(Block):
     def draw(self, app, canvas):
         super().draw(app, canvas)
         self.updateWidth()
-        canvas.create_text(self.x - self.width//2 + self.children[0].width + 37, self.y, text=self.operation, font="Times 20", fill="black")
+        canvas.create_text(self.x - self.width//2 +
+                           self.children[0].width + 37, self.y, text=self.operation, font="Times 20", fill="black")
         if isinstance(self.children[0], TextBox):
-            self.children[0].draw(app, canvas, self.x - self.width//2 + self.children[0].width//2 + 25, self.y)
+            self.children[0].draw(
+                app, canvas, self.x - self.width//2 + self.children[0].width//2 + 25, self.y)
         else:
-            self.children[0].x = self.x - self.width//2 + self.children[0].width//2 + 25
+            self.children[0].x = self.x - self.width//2 + \
+                self.children[0].width//2 + 25
             self.children[0].y = self.y
             self.children[0].draw(app, canvas)
         if isinstance(self.children[1], TextBox):
-            self.children[1].draw(app, canvas, self.x + self.width//2 - self.children[1].width//2 - 25, self.y)
+            self.children[1].draw(
+                app, canvas, self.x + self.width//2 - self.children[1].width//2 - 25, self.y)
         else:
-            self.children[1].x = self.x + self.width//2 - self.children[1].width//2 - 25
+            self.children[1].x = self.x + self.width//2 - \
+                self.children[1].width//2 - 25
             self.children[1].y = self.y
             self.children[1].draw(app, canvas)
+
 
 class AddBlock(OperationBlock):
     def __init__(self, x, y):
         super().__init__(x, y)
         self.operation = "+"
 
+
 class SubtractBlock(OperationBlock):
     def __init__(self, x, y):
         super().__init__(x, y)
         self.operation = "-"
 
+
 class MultiplyBlock(OperationBlock):
     def __init__(self, x, y):
         super().__init__(x, y)
         self.operation = "*"
+
 
 class DivideBlock(OperationBlock):
     def __init__(self, x, y):
@@ -189,7 +209,7 @@ class ReturnBlock(Block):
     def __init__(self, x, y, value) -> None:
         super().__init__(x, y)
 
-        #self.value can be a variable block
+        # self.value can be a variable block
         self.value = value
         self.fill = "lightblue"
 

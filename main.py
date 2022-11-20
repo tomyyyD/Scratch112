@@ -1,16 +1,18 @@
+"""
+Please read the README.md
+"""
+
 from cmu_112_graphics import *
 from guiClasses.Button import Button
 from Blocks import *
 from interpreter import Interpreter
-import io
-import sys
 
 
 def appStarted(app):
     app.blocks = []
     app.buttons = []
     createGui(app)
-    app.offset  = (0,0)
+    app.offset = (0, 0)
 
 
 def createGui(app):
@@ -48,15 +50,19 @@ def mousePressed(app, event):
         if mouseOnBlock(block, event.x, event.y):
             editting = False
             for textBox in block.textBoxes:
-                if mouseOnRectangle(event.x, event.y, textBox.coords):
+                if (textBox is not None) and mouseOnRectangle(event.x, event.y, textBox.coords):
                     textBox.setText(app)
                     editting = True
-                    break
+                    return
+            for childBlock in block.children:
+                if mouseOnRectangle(event.x, event.y, childBlock.coords):
+                    childBlock.pickedUp = True
+                    return
             if not editting:
                 block.pickedUp = True
                 app.offset = (block.x - event.x, block.y - event.y)
                 # break so we only move one block at a time
-            break
+            return
 
     for button in app.buttons:
         if mouseOnRectangle(event.x, event.y, button.coords):
@@ -72,6 +78,7 @@ def mousePressed(app, event):
 def mouseDragged(app, event):
     for block in app.blocks:
         if block.pickedUp:
+            print(block)
             if block.parent is not None:
                 block.breakLink()
             elif block.valueParent is not None:
@@ -113,8 +120,9 @@ def mouseReleased(app, event):
                                 for textbox in otherBlock.textBoxes:
                                     if mouseOnRectangle(event.x, event.y, textbox.coords):
                                         otherBlock.linkValueBlock(block, index)
-                                        return 
-                                    index+=1
+                                        print(index)
+                                        return
+                                    index += 1
                             # makes otherBlock the parent of block
                             # variable call blocks and operation block cannot be stand alone
                             # they must be within other blocks
@@ -127,6 +135,10 @@ def keyPressed(app, event):
         interpreter = Interpreter(app.blocks)
     if event.key == 'R':
         exec(open('output.py').read())
+    if event.key == 'P':
+        for block in app.blocks:
+            print(block.children)
+
 
 def drawGui(app, canvas):
     # draws the blocks tab

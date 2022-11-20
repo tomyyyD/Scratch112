@@ -17,8 +17,8 @@ class Interpreter:
             self.file.write(string)
             self.outputToFile(block.next)
         if isinstance(block, VariableBlock):
-            if isinstance(block.value, OperationBlock):
-                string = f"\t{block.name.getText()} = {self.buildOperationString(block.value)}\n"
+            if isinstance(block.children[1], OperationBlock):
+                string = f"\t{block.name.getText()} = {self.buildOperationString(block.children[1])}\n"
             else:
                 string = f"\t{block.name.getText()} = {block.value.getText()}\n"
             self.file.write(string)
@@ -28,14 +28,14 @@ class Interpreter:
             self.file.write(string)
 
     def buildOperationString(self, block):
-        if isinstance(block.lhs, TextBox) and isinstance(block.rhs, TextBox):
-            return f"{block.lhs.getText()} {block.operation} {block.rhs.getText()}"
-        elif isinstance(block.lhs, TextBox):
-            return f"{self.buildVariableString(block.lhs)} {block.operation} {block.rhs.getText()}"
-        elif isinstance(block.rhs, TextBox):
-            return f"{block.rhs.getText()} {block.operation} {self.buildVariableString(block.rhb)}"
+        if isinstance(block.children[0], TextBox) and isinstance(block.children[1], TextBox):
+            return f"{block.children[0].getText()} {block.operation} {block.children[1].getText()}"
+        elif isinstance(block.children[0], TextBox):
+            return f"{self.buildOperationString(block.children[0])} {block.operation} {block.children[1].getText()}"
+        elif isinstance(block.children[1], TextBox):
+            return f"{block.children[1].getText()} {block.operation} {self.buildOperationString(block.children[0])}"
         else:
-            return f"{self.buildOperationString(block.lhs)} {block.operation} {self.buildOperationString(block.rhs)}"
+            return f"{self.buildOperationString(block.children[0])} {block.operation} {self.buildOperationString(block.children[1])}"
 
     def generateMainFunc(self):
         string = '\n\nif __name__ == "__main__":\n'
