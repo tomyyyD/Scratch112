@@ -1,8 +1,6 @@
-def nothing():
-	x = 432 + 112
-	y = 112
-	return y
+def stuf():
+	y = 112 - 112 + 112 * 112
 
 
 if __name__ == "__main__":
-	nothing()
+	stuf()

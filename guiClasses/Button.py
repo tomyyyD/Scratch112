@@ -35,7 +35,7 @@ class Button:
             case 4:
                 app.blocks.append(ForLoopBlock(250, 100, 0))
             case 5:
-                app.blocks.append(PrintBlock(250, 100, ""))
+                app.blocks.append(PrintBlock(250, 100))
             case 6:
                 app.blocks.append(AddBlock(250, 100))
             case 7:
@@ -47,5 +47,5 @@ class Button:
             case 10:
                 name = app.getUserInput("What Variable Are you Calling?")
                 if name is None:
-                    return 
+                    return
                 app.blocks.append(VariableCallBlock(250, 100, name))

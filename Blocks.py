@@ -2,7 +2,7 @@ from guiClasses.TextBox import TextBox
 
 
 class Block:
-    def __init__(self, x, y) -> None:
+    def __init__(self, x: int, y: int) -> None:
         self.x = x
         self.y = y
         self.pickedUp = False
@@ -40,7 +40,6 @@ class Block:
         self.next.parent = self
 
     def unLinkValueBlock(self):
-        print("running")
         self.valueParent.resetTextBox(self.parentPosition)
         self.valueParent = None
 
@@ -50,7 +49,6 @@ class Block:
         self.children[pos] = block
         self.textBoxes[pos] = None
         block.parentPosition = pos
-        print(self.children)
 
     def resetTextBox(self, pos):
         self.children[pos] = TextBox(self.x, self.y, "112", "Enter Value")
@@ -63,20 +61,21 @@ class FunctionBlock(Block):
         # self.name = name
         self.fill = "yellow"
         self.nameInput = TextBox(x, y, name, "Function Name")
-        self.name = self.nameInput.getText()
         self.width = self.nameInput.width + 100
         self.textBoxes.append(self.nameInput)
-
-    def setName(self, input):
-        self.name = input
+        self.args = []
 
     def getName(self):
-        return self.name
+        return self.nameInput.getText()
 
     def draw(self, app, canvas):
         self.width = self.nameInput.width + 100
         super().draw(app, canvas)
         self.nameInput.draw(app, canvas, self.x - 25, self.y)
+        index = 0
+        for arg in self.args:
+            arg.draw(self.x + self.nameInput.width +
+                     index * self.width + 15, self.y)
 
 # variable addignment block
 
@@ -136,6 +135,9 @@ class VariableCallBlock(Block):
         super().draw(app, canvas)
         canvas.create_text(self.x, self.y, text=self.name,
                            font="Times 20", fill="black")
+
+    def getText(self):
+        return self.name
 
 
 class OperationBlock(Block):
@@ -199,22 +201,28 @@ class DivideBlock(OperationBlock):
 
 
 class PrintBlock(Block):
-    def __init__(self, x, y, text) -> None:
+    def __init__(self, x, y) -> None:
         super().__init__(x, y)
-        self.value = value
+        self.textInput = TextBox(x, y, "112", "Print Value")
+        self.textBoxes = [self.textInput]
         self.fill = "Orange"
+        self.children = [self.textInput]
+
+    def draw(self, app, canvas):
+        super().draw(app, canvas)
+        self.textBoxes[0].draw(app, canvas, self.x, self.y)
 
 
 class ReturnBlock(Block):
     def __init__(self, x, y, value) -> None:
         super().__init__(x, y)
-
         # self.value can be a variable block
         self.value = value
         self.fill = "lightblue"
 
     def draw(self, app, canvas):
         super().draw(app, canvas)
+        canvas.create_text(self.x, self.y, text="return")
         if isinstance(self.value, VariableCallBlock):
             self.value.x = self.x + self.value.width//2
             self.value.y = self.y
