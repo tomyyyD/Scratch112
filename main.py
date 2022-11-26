@@ -66,30 +66,18 @@ def checkBlock(app, event, block: Block):
 
 
 def mousePressed(app, event):
+    x = 250
+    y = 100
     for block in reversed(app.blocks):
         if checkBlock(app, event, block):
             return
-        # moving blocks with cursor
-        # if mouseOnBlock(block, event.x, event.y):
-        #     editting = False
-        #     for textBox in block.textBoxes:
-        #         if (textBox is not None) and mouseOnRectangle(event.x, event.y, textBox.coords):
-        #             textBox.setText(app)
-        #             editting = True
-        #             return
-        #     for childBlock in block.children:
-        #         if mouseOnRectangle(event.x, event.y, childBlock.coords):
-        #             childBlock.pickedUp = True
-        #             return
-        #     if not editting:
-        #         block.pickedUp = True
-        #         app.offset = (block.x - event.x, block.y - event.y)
-        #         # break so we only move one block at a time
-        #     return
-
     for button in app.buttons:
         if mouseOnRectangle(event.x, event.y, button.coords):
-            button.onClick(app)
+            for blocks in app.blocks:
+                if block.x == x and block.y == y:
+                    x += 10
+                    y += 10
+            button.onClick(app, x, y)
 
     if event.x < 150:
         return

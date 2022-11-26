@@ -16,36 +16,36 @@ class Button:
         canvas.create_text(midX, midY, text=self.text,
                            fill="black", font="Times 20")
 
-    def onClick(self, app) -> None:
+    def onClick(self, app, spawnX, spawnY) -> None:
         match self.block:
             case 0:
                 name = app.getUserInput("Function Name?")
                 if name is None:
                     return
-                app.blocks.append(FunctionBlock(250, 100, name))
+                app.blocks.append(FunctionBlock(spawnX, spawnY, name))
             case 1:
-                app.blocks.append(ReturnBlock(250, 100, "112"))
+                app.blocks.append(ReturnBlock(spawnX, spawnY, "112"))
             case 2:
                 name = app.getUserInput("Variable Name?")
                 if name is None:
                     return
-                app.blocks.append(VariableBlock(250, 100, name))
+                app.blocks.append(VariableBlock(spawnX, spawnY, name))
             case 3:
-                app.blocks.append(ConditionalBlock(250, 100, "", ""))
+                app.blocks.append(ConditionalBlock(spawnX, spawnY, "", ""))
             case 4:
-                app.blocks.append(ForLoopBlock(250, 100, 0))
+                app.blocks.append(ForLoopBlock(spawnX, spawnY, 0))
             case 5:
-                app.blocks.append(PrintBlock(250, 100))
+                app.blocks.append(PrintBlock(spawnX, spawnY))
             case 6:
-                app.blocks.append(AddBlock(250, 100))
+                app.blocks.append(AddBlock(spawnX, spawnY))
             case 7:
-                app.blocks.append(SubtractBlock(250, 100))
+                app.blocks.append(SubtractBlock(spawnX, spawnY))
             case 8:
-                app.blocks.append(MultiplyBlock(250, 100))
+                app.blocks.append(MultiplyBlock(spawnX, spawnY))
             case 9:
-                app.blocks.append(DivideBlock(250, 100))
+                app.blocks.append(DivideBlock(spawnX, spawnY))
             case 10:
                 name = app.getUserInput("What Variable Are you Calling?")
                 if name is None:
                     return
-                app.blocks.append(VariableCallBlock(250, 100, name))
+                app.blocks.append(VariableCallBlock(spawnX, spawnY, name))
