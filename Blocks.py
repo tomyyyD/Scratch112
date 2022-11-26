@@ -112,12 +112,6 @@ class VariableBlock(Block):
             self.children[1].draw(
                 app, canvas, self.x + self.width//2 - self.children[1].width//2 - 25, self.y)
 
-    # def resetTextBox(self):
-    #     self.value = TextBox(self.x, self.y, "112", "Enter Value")
-    #     self.textBoxes.append(self.value)
-    #     self.children.pop()
-    #     self.children.append(self.value)
-
 # variable calling Block
 
 
@@ -208,15 +202,27 @@ class PrintBlock(Block):
         self.fill = "Orange"
         self.children = [self.textInput]
 
+    def updateWidth(self):
+        self.width = self.children[0].width + 75
+
     def draw(self, app, canvas):
         super().draw(app, canvas)
-        self.textBoxes[0].draw(app, canvas, self.x, self.y)
+        self.updateWidth()
+        if isinstance(self.children[0], TextBox):
+            self.children[0].draw(app, canvas, self.x, self.y)
+        else:
+            self.children[0].x = self.x
+            self.children[0].y = self.y
+            self.children[0].draw(app, canvas)
 
 
 class ReturnBlock(Block):
     def __init__(self, x, y, value) -> None:
         super().__init__(x, y)
         # self.value can be a variable block
+        self.textInput = TextBox(x, y, value, "Print Value")
+        self.textBoxes = [self.textInput]
+
         self.value = value
         self.fill = "lightblue"
 
@@ -244,3 +250,14 @@ class ForLoopBlock(Block):
         super().__init__(x, y)
         self.range = range
         self.fill = "violet"
+        self.loops = TextBox(x, y, 12, "Loops")
+        self.textBoxes = [self.loops]
+        self.value = PrintBlock(x, y)
+        self.children = [self.loops, self.value]
+
+    def draw(self, app, canvas):
+        super().draw(app, canvas)
+        self.loops.draw(app, canvas, self.x, self.y)
+        self.value.x = self.x + self.width - 25
+        self.value.y = self.y + 20
+        self.value.draw(app, canvas)

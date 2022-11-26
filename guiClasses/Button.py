@@ -24,7 +24,7 @@ class Button:
                     return
                 app.blocks.append(FunctionBlock(250, 100, name))
             case 1:
-                app.blocks.append(ReturnBlock(250, 100, ""))
+                app.blocks.append(ReturnBlock(250, 100, "112"))
             case 2:
                 name = app.getUserInput("Variable Name?")
                 if name is None:

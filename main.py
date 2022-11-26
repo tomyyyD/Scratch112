@@ -119,14 +119,15 @@ def dropBlock(app, event, block: Block, otherBlock: Block):
     # the only blocks that can be made a value block are Variable calls and operations
     elif (isinstance(otherBlock, VariableBlock)):
         # check child of the variable first
-        for child in block.children:
+        for child in otherBlock.children:
             dropBlock(app, event, block, child)
         if len(otherBlock.textBoxes) > 1 and otherBlock.textBoxes[1] and mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[1].coords):
             otherBlock.linkValueBlock(block, 1)
             return
     # linking blocks to sides of Operation block equation
     elif isinstance(otherBlock, OperationBlock):
-        for child in block.children:
+        # Using recursion to make sure you always check the child blocks first
+        for child in otherBlock.children:
             dropBlock(app, event, block, child)
         index = 0
         for textbox in otherBlock.textBoxes:
@@ -135,7 +136,12 @@ def dropBlock(app, event, block: Block, otherBlock: Block):
                 return
             index += 1
     elif isinstance(otherBlock, PrintBlock):
-        otherBlock.linkValueBlock(block, index)
+        if not isinstance(otherBlock.children[0], TextBox):
+            dropBlock(app, event, block, otherBlock.children[1])
+        if mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[0].coords):
+            print("linking")
+            otherBlock.linkValueBlock(block, 0)
+            return
 
 
 def mouseReleased(app, event):
@@ -170,6 +176,7 @@ def keyPressed(app, event):
     if event.key == 'P':
         for block in app.blocks:
             print(block.children)
+        print("-----------------------")
 
 
 def drawGui(app, canvas):

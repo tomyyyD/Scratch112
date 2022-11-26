@@ -9,26 +9,88 @@ class Interpreter:
             if isinstance(block, FunctionBlock):
                 self.functionBlocks.append(block)
         for functionBlock in self.functionBlocks:
-            self.outputToFile(functionBlock)
+            self.file.write(self.buildString(functionBlock, 0, functionBlock))
+        # print(self.buildString(functionBlock, 0, functionBlock))
         self.generateMainFunc()
 
-    def outputToFile(self, block):
+    def buildString(self, block, depth, lastDepthChange):
+        string = ''
+        if block is None:
+            return ""
+        if depth == -1:
+            return string
+        nextblock = block.next
+        if isinstance(block, FunctionBlock):
+            string += f"def {block.nameInput.getText()}():\n"
+            depth += 1
+        elif isinstance(block, VariableBlock):
+            if isinstance(block.children[1], OperationBlock):
+                string += (
+                    "\t" * depth) + f"{block.children[0].getText()} = {self.buildOperationString(block.children[1])}\n"
+            else:
+                string += (
+                    "\t" * depth) + f"{block.children[0].getText()} = {block.children[1].getText()}\n"
+        elif isinstance(block, ReturnBlock):
+            string += ("\t" * depth) + \
+                f"return {block.textInput.getText()}\n"
+        elif isinstance(block, PrintBlock):
+            if isinstance(block.children[0], OperationBlock):
+                string += (
+                    "\t" * depth) + f"print({self.buildOperationString(self.children[0])})\n"
+            else:
+                string += (
+                    "\t" * depth) + f"print({block.children[0].getText()})\n"
+        elif isinstance(block, ForLoopBlock):
+            string += ("\t" * depth) + \
+                f"for i in range({block.loops.getText()}):\n"
+            depth += 1
+            lastDepthChange = block
+            nextblock = block.value
+        if block.next is None:
+            depth -= 1
+            if depth == 0:
+                return string
+            block = lastDepthChange
+            nextblock = block.next
+
+        string += self.buildString(nextblock, depth, lastDepthChange)
+
+        return string
+
+    def outputToFile(self, block, depth):
+        if block is None:
+            return
+        string = ''
         if isinstance(block, FunctionBlock):
             string = f"def {block.nameInput.getText()}():\n"
             self.file.write(string)
-            self.outputToFile(block.next)
-        if isinstance(block, VariableBlock):
+            self.outputToFile(block.next, depth + 1)
+            return
+        elif isinstance(block, VariableBlock):
             if isinstance(block.children[1], OperationBlock):
-                string = f"\t{block.children[0].getText()} = {self.buildOperationString(block.children[1])}\n"
+                string = (
+                    "\t" * depth) + f"{block.children[0].getText()} = {self.buildOperationString(block.children[1])}\n"
             else:
-                string = f"\t{block.children[0].getText()} = {block.children[1].getText()}\n"
-            self.file.write(string)
-            self.outputToFile(block.next)
-        if isinstance(block, ReturnBlock):
-            string = f"\treturn {block.value.name}\n"
-            self.file.write(string)
-        if isinstance(block, PrintBlock):
-            string = f"print({block.children.getText()})"
+                string = (
+                    "\t" * depth) + f"{block.children[0].getText()} = {block.children[1].getText()}\n"
+            # self.file.write(string)
+            # self.outputToFile(block.next)
+        elif isinstance(block, ReturnBlock):
+            string = f"\treturn {block.textInput.getText()}\n"
+            # self.file.write(string)
+        elif isinstance(block, PrintBlock):
+            if isinstance(block.children[0], OperationBlock):
+                string = (
+                    "\t" * depth) + f"print({self.buildOperationString(self.children[0])})"
+            else:
+                string = (
+                    "\t" * depth) + f"print({block.children[0].getText()})"
+        elif isinstance(block, ForLoopBlock):
+            string = ("\t" * depth) + f"for i in range({block.loops})\n"
+            self.outputToFile(block.next, depth + 1)
+            return
+        self.file.write(string)
+        self.outputToFile(block.next, depth)
 
     def buildOperationString(self, block):
         # Recursion Moment!!

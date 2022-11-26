@@ -32,7 +32,7 @@ class TextBox:
 
     def setTextLength(self):
         sum = 0
-        for c in self.text:
+        for c in str(self.text):
             if c.lower() in ("m", 'w'):
                 sum += 7.5
             if c.lower() in ('q', 'e', 'r', 'y', 'u', 'o', 'p', 'a', 's', 'd', 'g', 'h', 'k', 'z', 'x', 'c', 'v', 'b', 'n'):
