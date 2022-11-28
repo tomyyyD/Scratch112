@@ -46,7 +46,9 @@ class Interpreter:
                 f"for i in range({block.loops.getText()}):\n"
             depth += 1
             lastDepthChange = block
-            nextblock = block.value
+            nextblock = block.children[1]
+            if isinstance(nextblock, TextBox):
+                string += ("\t" * depth + 1) + "pass"
         # backtracking through the linkedlist/tree-ish structure that is the blocks
         if block.next is None:
             depth -= 1

@@ -7,10 +7,11 @@ class Block:
         self.y = y
         self.pickedUp = False
         self.fill = "green"
+        self.font = "times 20"
         self.width = 150
         self.height = 20
         self.textBoxes = []
-        self.coords = [[self.x - self.width//2, self.y - self.height],
+        self.coords = [[self.x - self.width//2, self.y - 20],
                        [self.x + self.width//2, self.y + self.height]]
         self.next = None
         self.parent = None
@@ -19,7 +20,7 @@ class Block:
         self.parentPosition = None
 
     def updateCoords(self):
-        self.coords = [[self.x - self.width//2, self.y - self.height],
+        self.coords = [[self.x - self.width//2, self.y - 20],
                        [self.x + self.width//2, self.y + self.height]]
 
     def draw(self, app, canvas):
@@ -27,7 +28,7 @@ class Block:
         canvas.create_rectangle(self.coords[0][0], self.coords[0][1], self.coords[1][0],
                                 self.coords[1][1], fill=self.fill, outline="black", width=2)
         if self.next is not None:
-            self.next.y = self.y + 40
+            self.next.y = self.y + 20 + self.height
             self.next.x = self.x - (self.width - self.next.width)//2
             self.next.draw(app, canvas)
 
@@ -53,6 +54,13 @@ class Block:
     def resetTextBox(self, pos):
         self.children[pos] = TextBox(self.x, self.y, "112", "Enter Value")
         self.textBoxes[pos] = self.children[pos]
+
+    def updateWidth(self):
+        width = 75
+        for child in self.children:
+            if isinstance(child, Block) or isinstance(child, TextBox):
+                width += child.width
+        self.width = width
 
 
 class FunctionBlock(Block):
@@ -91,8 +99,8 @@ class VariableBlock(Block):
         self.fill = "red"
         # self.children.extend([self.name, self.value])
 
-    def updateWidth(self):
-        self.width = self.children[0].width + self.children[1].width + 75
+    # def updateWidth(self):
+    #     self.width = self.children[0].width + self.children[1].width + 75
 
     def draw(self, app, canvas):
         # name is children[0]
@@ -251,13 +259,48 @@ class ForLoopBlock(Block):
         self.range = range
         self.fill = "violet"
         self.loops = TextBox(x, y, 12, "Loops")
-        self.textBoxes = [self.loops]
-        self.value = PrintBlock(x, y)
-        self.children = [self.loops, self.value]
+        self.placeholder = TextBox(x, y, "Place block Here", "Blocks")
+        self.textBoxes = [self.loops, self.placeholder]
+        self.children = [self.loops, self.placeholder]
 
     def draw(self, app, canvas):
         super().draw(app, canvas)
-        self.loops.draw(app, canvas, self.x, self.y)
-        self.value.x = self.x + self.width - 25
-        self.value.y = self.y + 20
-        self.value.draw(app, canvas)
+        self.updateWidth()
+        self.updateHeight()
+        canvas.create_text(self.x - self.width//2 + 30,
+                           self.y, text="Loop", fill="black", font=self.font)
+        canvas.create_text(self.x + self.width//2 - 30,
+                           self.y, text="Times", fill="black", font=self.font)
+        if isinstance(self.children[0], TextBox):
+            self.children[0].draw(app, canvas, self.x, self.y)
+        else:
+            self.children[0].x = self.x
+            self.children[0].y = self.y
+            self.children[0].draw(app, canvas)
+        if isinstance(self.children[1], TextBox):
+            # self.children[1].x = self.x - self.width//2 + \
+            #     self.children[1].width//2 + 20
+            # self.children[1].y = self.y + 20
+            self.children[1].draw(
+                app, canvas, self.x - self.width//2 + self.children[1].width//2 + 20, self.y + 40)
+        else:
+            self.children[1].x = self.x - \
+                self.width//2 + self.children[1].width//2 + 20
+            self.children[1].y = self.y + 40
+            self.children[1].draw(app, canvas)
+        # for i in range(2, len(self.children)):
+        #     self.children[i].x = self.x - \
+        #         self.width//2 + self.children[i].width//2 + 20
+        #     self.children[i].y = self.y + i*20
+        #     self.children[i].draw(app, canvas)
+
+    def updateHeight(self):
+        value = self.placeholder
+        if isinstance(self.placeholder, TextBox):
+            self.height = 60
+            return
+        sum = 0
+        while value:
+            value = value.next
+            sum += 1
+        self.height = sum * 40

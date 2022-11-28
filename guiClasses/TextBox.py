@@ -34,7 +34,7 @@ class TextBox:
         sum = 0
         for c in str(self.text):
             if c.lower() in ("m", 'w'):
-                sum += 7.5
+                sum += 6.5
             if c.lower() in ('q', 'e', 'r', 'y', 'u', 'o', 'p', 'a', 's', 'd', 'g', 'h', 'k', 'z', 'x', 'c', 'v', 'b', 'n'):
                 sum += 4.5
             if c.lower() in ('t', 'i', 'f', 'j', 'l'):

@@ -45,7 +45,7 @@ def mouseOnRectangle(mx, my, rectangle):
 
 
 def checkBlock(app, event, block: Block):
-    if mouseOnBlock(block, event.x, event.y):
+    if mouseOnRectangle(event.x, event.y, block.coords):
         editting = False
         for textBox in block.textBoxes:
             if (textBox is not None) and mouseOnRectangle(event.x, event.y, textBox.coords):
@@ -73,7 +73,7 @@ def mousePressed(app, event):
             return
     for button in app.buttons:
         if mouseOnRectangle(event.x, event.y, button.coords):
-            for blocks in app.blocks:
+            for otherBlock in app.blocks:
                 if block.x == x and block.y == y:
                     x += 10
                     y += 10
@@ -98,6 +98,12 @@ def mouseDragged(app, event):
 
 
 def dropBlock(app, event, block: Block, otherBlock: Block):
+    if isinstance(otherBlock, ForLoopBlock) and otherBlock.textBoxes[1]:
+        if mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[1].coords):
+            otherBlock.linkValueBlock(block, 1)
+            return
+        if mouseOnRectangle(event.x, event.y, otherBlock.children[1]):
+            otherBlock.linkBlock(block)
     # makes otherBlock the parent of block
     # variable call blocks and operation block cannot be stand alone
     # they must be within other blocks
@@ -130,6 +136,9 @@ def dropBlock(app, event, block: Block, otherBlock: Block):
             print("linking")
             otherBlock.linkValueBlock(block, 0)
             return
+    elif isinstance(otherBlock, ForLoopBlock):
+        if mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[0].coords):
+            otherBlock.linkValueBlock(block, 0)
 
 
 def mouseReleased(app, event):
@@ -184,6 +193,8 @@ def drawBlocks(app, canvas):
     for block in app.blocks:
         if block.pickedUp:
             movingBlock = block
+        if block.parent:
+            continue
         block.draw(app, canvas)
     if movingBlock is not None:
         movingBlock.draw(app, canvas)

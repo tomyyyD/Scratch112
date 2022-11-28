@@ -33,7 +33,10 @@ class Button:
             case 3:
                 app.blocks.append(ConditionalBlock(spawnX, spawnY, "", ""))
             case 4:
+                # block = PrintBlock(spawnX, spawnY)
+                # app.blocks.append(block)
                 app.blocks.append(ForLoopBlock(spawnX, spawnY, 0))
+
             case 5:
                 app.blocks.append(PrintBlock(spawnX, spawnY))
             case 6:
