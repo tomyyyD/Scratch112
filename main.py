@@ -29,6 +29,9 @@ def createGui(app):
                         40 * index, 140, startX + 30 + 40 * index, index)
         app.buttons.append(button)
         index += 1
+    runButton = Button("run", "green", app.width -
+                       70, 20, app.width - 20, 70, 11)
+    app.buttons.append(runButton)
 
 
 def mouseOnBlock(block, x, y):
@@ -101,44 +104,67 @@ def dropBlock(app, event, block: Block, otherBlock: Block):
     if isinstance(otherBlock, ForLoopBlock) and otherBlock.textBoxes[1]:
         if mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[1].coords):
             otherBlock.linkValueBlock(block, 1)
-            return
-        if mouseOnRectangle(event.x, event.y, otherBlock.children[1]):
+            return True
+        if mouseOnRectangle(event.x, event.y, otherBlock.children[1].coords):
+            otherBlock.children[1].linkBlock(block)
+            return True
+    elif isinstance(otherBlock, ForLoopBlock) and (isinstance(block, OperationBlock) or isinstance(block, VariableCallBlock)):
+        for child in otherBlock.children:
+            if dropBlock(app, event, block, child):
+                return True
+        if otherBlock.textBoxes[0] and mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[0].coords):
+            otherBlock.linkValueBlock(block, 0)
+            return True
+    elif isinstance(otherBlock, ForLoopBlock):
+        if mouseOnRectangle(event.x, event.y, otherBlock.placeCoords):
             otherBlock.linkBlock(block)
+            return True
+        else:
+            return False
+
     # makes otherBlock the parent of block
     # variable call blocks and operation block cannot be stand alone
     # they must be within other blocks
     if not (isinstance(block, VariableCallBlock) or isinstance(block, OperationBlock)):
         otherBlock.linkBlock(block)
+        return True
     # linking block to values of variable blocks
     # the only blocks that can be made a value block are Variable calls and operations
     elif (isinstance(otherBlock, VariableBlock)):
         # check child of the variable first
         for child in otherBlock.children:
-            dropBlock(app, event, block, child)
+            if dropBlock(app, event, block, child):
+                return True
         if len(otherBlock.textBoxes) > 1 and otherBlock.textBoxes[1] and mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[1].coords):
             otherBlock.linkValueBlock(block, 1)
-            return
+            return True
     # linking blocks to sides of Operation block equation
     elif isinstance(otherBlock, OperationBlock):
         # Using recursion to make sure you always check the child blocks first
         for child in otherBlock.children:
-            dropBlock(app, event, block, child)
+            if dropBlock(app, event, block, child):
+                return True
         index = 0
         for textbox in otherBlock.textBoxes:
             if textbox and mouseOnRectangle(event.x, event.y, textbox.coords):
                 otherBlock.linkValueBlock(block, index)
-                return
+                return True
             index += 1
     elif isinstance(otherBlock, PrintBlock):
         if not isinstance(otherBlock.children[0], TextBox):
-            dropBlock(app, event, block, otherBlock.children[1])
-        if mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[0].coords):
+            dropBlock(app, event, block, otherBlock.children[0])
+        if otherBlock.textBoxes[0] and mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[0].coords):
             print("linking")
             otherBlock.linkValueBlock(block, 0)
-            return
+            return True
     elif isinstance(otherBlock, ForLoopBlock):
-        if mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[0].coords):
+        for child in otherBlock.children:
+            if dropBlock(app, event, block, child):
+                return True
+        if otherBlock.textBoxes[0] and mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[0].coords):
             otherBlock.linkValueBlock(block, 0)
+            return True
+    return False
 
 
 def mouseReleased(app, event):

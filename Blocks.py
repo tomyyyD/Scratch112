@@ -13,6 +13,8 @@ class Block:
         self.textBoxes = []
         self.coords = [[self.x - self.width//2, self.y - 20],
                        [self.x + self.width//2, self.y + self.height]]
+        self.placeCoords = [[self.x - self.width//2, self.y - 20],
+                            [self.x + self.width//2, self.y + 20]]
         self.next = None
         self.parent = None
         self.valueParent = None
@@ -22,6 +24,8 @@ class Block:
     def updateCoords(self):
         self.coords = [[self.x - self.width//2, self.y - 20],
                        [self.x + self.width//2, self.y + self.height]]
+        self.placeCoords = [[self.x - self.width//2, self.y - 20],
+                            [self.x + self.width//2, self.y + 20]]
 
     def draw(self, app, canvas):
         self.updateCoords()
@@ -37,6 +41,10 @@ class Block:
         self.parent = None
 
     def linkBlock(self, block):
+        if self.next:
+            self.next.x += 50
+            self.next.y += 50
+            self.next.parent = None
         self.next = block
         self.next.parent = self
 
@@ -124,9 +132,10 @@ class VariableBlock(Block):
 
 
 class VariableCallBlock(Block):
-    def __init__(self, x, y, name) -> None:
+    def __init__(self, x, y, block) -> None:
         super().__init__(x, y)
-        self.name = name
+        self.link = block
+        self.name = self.link.children[0].getText()
 
         # self.value should be able to be an operation block or a textbox
         self.fill = "red"
@@ -134,6 +143,7 @@ class VariableCallBlock(Block):
         self.width = len(self.fill) * 5 + 50
 
     def draw(self, app, canvas):
+        self.name = self.link.children[0].getText()
         super().draw(app, canvas)
         canvas.create_text(self.x, self.y, text=self.name,
                            font="Times 20", fill="black")
@@ -236,13 +246,15 @@ class ReturnBlock(Block):
 
     def draw(self, app, canvas):
         super().draw(app, canvas)
-        canvas.create_text(self.x, self.y, text="return")
+        canvas.create_text(self.x - self.width//2 + 35, self.y,
+                           text="Return", font=self.font, fill="black")
         if isinstance(self.value, VariableCallBlock):
             self.value.x = self.x + self.value.width//2
             self.value.y = self.y
             self.value.draw(app, canvas)
         else:
-            canvas.create_text(self.x, self.y, text=self.value)
+            canvas.create_text(self.x + self.width//2 -
+                               30, self.y, text=self.value, font=self.font, fill="black")
 
 
 class ConditionalBlock(Block):
@@ -278,9 +290,6 @@ class ForLoopBlock(Block):
             self.children[0].y = self.y
             self.children[0].draw(app, canvas)
         if isinstance(self.children[1], TextBox):
-            # self.children[1].x = self.x - self.width//2 + \
-            #     self.children[1].width//2 + 20
-            # self.children[1].y = self.y + 20
             self.children[1].draw(
                 app, canvas, self.x - self.width//2 + self.children[1].width//2 + 20, self.y + 40)
         else:
@@ -288,19 +297,15 @@ class ForLoopBlock(Block):
                 self.width//2 + self.children[1].width//2 + 20
             self.children[1].y = self.y + 40
             self.children[1].draw(app, canvas)
-        # for i in range(2, len(self.children)):
-        #     self.children[i].x = self.x - \
-        #         self.width//2 + self.children[i].width//2 + 20
-        #     self.children[i].y = self.y + i*20
-        #     self.children[i].draw(app, canvas)
+        # self.children[1].next.draw(app, canvas)
 
     def updateHeight(self):
-        value = self.placeholder
-        if isinstance(self.placeholder, TextBox):
+        value = self.children[1]
+        if isinstance(value, TextBox):
             self.height = 60
             return
         sum = 0
         while value:
             value = value.next
             sum += 1
-        self.height = sum * 40
+        self.height = 20 + sum * 40

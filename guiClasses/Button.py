@@ -1,4 +1,5 @@
 from Blocks import *
+from interpreter import Interpreter
 
 
 class Button:
@@ -51,4 +52,14 @@ class Button:
                 name = app.getUserInput("What Variable Are you Calling?")
                 if name is None:
                     return
-                app.blocks.append(VariableCallBlock(spawnX, spawnY, name))
+                # can only call a variable if it has been initialized
+                for block in app.blocks:
+                    if isinstance(block, VariableBlock) and name == block.children[0].getText():
+                        app.blocks.append(
+                            VariableCallBlock(spawnX, spawnY, block))
+                        break
+
+            case 11:
+                interpreter = Interpreter(app.blocks)
+                exec(open('./output.py').read())
+                # exec("./ouput.py")

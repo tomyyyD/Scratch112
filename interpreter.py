@@ -17,9 +17,7 @@ class Interpreter:
     def buildString(self, block, depth, lastDepthChange):
         string = ''
         if block is None:
-            return ""
-        if depth == -1:
-            return string
+            return ''
         nextblock = block.next
         if isinstance(block, FunctionBlock):
             string += f"def {block.nameInput.getText()}():\n"
@@ -37,25 +35,20 @@ class Interpreter:
         elif isinstance(block, PrintBlock):
             if isinstance(block.children[0], OperationBlock):
                 string += (
-                    "\t" * depth) + f"print({self.buildOperationString(self.children[0])})\n"
+                    "\t" * depth) + f"print({self.buildOperationString(block.children[0])})\n"
             else:
                 string += (
                     "\t" * depth) + f"print({block.children[0].getText()})\n"
         elif isinstance(block, ForLoopBlock):
             string += ("\t" * depth) + \
-                f"for i in range({block.loops.getText()}):\n"
-            depth += 1
-            lastDepthChange = block
-            nextblock = block.children[1]
-            if isinstance(nextblock, TextBox):
-                string += ("\t" * depth + 1) + "pass"
-        # backtracking through the linkedlist/tree-ish structure that is the blocks
-        if block.next is None:
-            depth -= 1
-            if depth == 0:
-                return string
-            block = lastDepthChange
-            nextblock = block.next
+                f"for i in range({block.children[0].getText()}):\n"
+            # depth += 1
+            # increase depth for nested blocks
+            if isinstance(block.children[1], TextBox):
+                string += ("\t" * (depth + 1)) + "pass"
+            else:
+                string += self.buildString(block.children[1],
+                                           depth + 1, block)
 
         string += self.buildString(nextblock, depth, lastDepthChange)
 
@@ -112,8 +105,13 @@ class Interpreter:
             return f"({self.buildOperationString(block.children[0])} {block.operation} {self.buildOperationString(block.children[1])})"
 
     def generateMainFunc(self):
-        string = '\n\nif __name__ == "__main__":\n'
+        string = ''
+        # string = '\n\nif __name__ == "__main__":\n'
+        # for functionBlock in self.functionBlocks:
+        #     string += f"\t{functionBlock.getName()}()\n"
+        # self.file.write(string)
+        # self.file.close()
         for functionBlock in self.functionBlocks:
-            string += f"\t{functionBlock.getName()}()\n"
+            string += f"{functionBlock.getName()}()\n"
         self.file.write(string)
         self.file.close()
