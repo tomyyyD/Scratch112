@@ -9,8 +9,11 @@ This is a drag and drop imperative programming language developed in Python and 
     - [Variable Assignment](#variable-assignment)
     - [For Loops](#for-loops)
     - [Conditionals](#conditionals)
+    - [Print](#print)
+    - [Return](#return)
   - [Internal Blocks](#internal-blocks)
     - [Variable Call Block](#variable-call-block)
+    - [Math Operations](#math-operations)
 
 ## Disclaimer
 
