@@ -2,10 +2,10 @@
 
 This is a drag and drop imperative programming language developed in Python and using the cmu_112_graphics library for the GUI. You can run the program by running the main.py file in the terminal.
 
-- [How to use] (#how-to-use)
-- [documentation] (#block-usage)
-  - [Function] (#function-block)
-  - [Variable Assignment] (#variable-assignment)
+- [How to use](#how-to-use)
+- [Documentation](#block-usage)
+  - [Functions](#function-block)
+  - [Variable Assignment](#variable-assignment)
 
 ## Disclaimer
 
