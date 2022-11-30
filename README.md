@@ -2,16 +2,16 @@
 
 This is a drag and drop imperative programming language developed in Python and using the cmu_112_graphics library for the GUI. You can run the program by running the main.py file in the terminal.
 
-- [How to use] (#-how-to-use)
-- [documentation] (#-block-usage)
-  - [Function] (#-function-block)
-  - [Variable Assignment] (#-variable-assignment)
+- [How to use] (#how-to-use)
+- [documentation] (#block-usage)
+  - [Function] (#function-block)
+  - [Variable Assignment] (#variable-assignment)
 
 ## Disclaimer
 
 Please run this project in Python 3.10 or later.
 
-## how to use
+## How To Use
 
 To spawn a block, press one of the buttons on the left-hand side of the screen. The block will appear in the top-left area of the block space.
 There are two types of blocks, separated in the button space by the red line.
@@ -34,7 +34,7 @@ The list of internal blocks is:
 - Multiply
 - Variable Call
 
-## Block Useage
+## Block Usage
 
 ### Function Block
 
