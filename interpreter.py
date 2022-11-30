@@ -18,36 +18,38 @@ class Interpreter:
         string = ''
         if block is None:
             return ''
+        if isinstance(block, TextBox):
+            return block.getText()
         nextblock = block.next
         if isinstance(block, FunctionBlock):
             string += f"def {block.nameInput.getText()}():\n"
             depth += 1
         elif isinstance(block, VariableBlock):
-            if isinstance(block.children[1], OperationBlock):
-                string += (
-                    "\t" * depth) + f"{block.children[0].getText()} = {self.buildOperationString(block.children[1])}\n"
-            else:
-                string += (
-                    "\t" * depth) + f"{block.children[0].getText()} = {block.children[1].getText()}\n"
+            string += (
+                "\t" * depth) + f"{block.children[0].getText()} = {self.buildOperationString(block.children[1])}\n"
         elif isinstance(block, ReturnBlock):
             string += ("\t" * depth) + \
                 f"return {block.textInput.getText()}\n"
         elif isinstance(block, PrintBlock):
-            if isinstance(block.children[0], OperationBlock):
-                string += (
-                    "\t" * depth) + f"print({self.buildOperationString(block.children[0])})\n"
-            else:
-                string += (
-                    "\t" * depth) + f"print({block.children[0].getText()})\n"
+            string += (
+                "\t" * depth) + f"print({self.buildOperationString(block.children[0])})\n"
         elif isinstance(block, ForLoopBlock):
             string += ("\t" * depth) + \
-                f"for i in range({block.children[0].getText()}):\n"
+                f"for i in range({self.buildOperationString(block.children[0])}):\n"
             # depth += 1
             # increase depth for nested blocks
             if isinstance(block.children[1], TextBox):
                 string += ("\t" * (depth + 1)) + "pass\n"
             else:
                 string += self.buildString(block.children[1],
+                                           depth + 1, block)
+        elif isinstance(block, ConditionalBlock):
+            string += ("\t" * depth) + \
+                f"if {self.buildOperationString(block.children[0])} {block.children[2].getText()} {self.buildOperationString(block.children[1])}:\n"
+            if isinstance(block.children[3], TextBox):
+                string += ("\t" * (depth + 1)) + "pass\n"
+            else:
+                string += self.buildString(block.children[3],
                                            depth + 1, block)
 
         string += self.buildString(nextblock, depth, lastDepthChange)
@@ -93,6 +95,10 @@ class Interpreter:
         # Recursion Moment!!
         # builds operation string by going into the children and finding their values and operations
         # print(block)
+        if isinstance(block, TextBox):
+            return block.getText()
+        if isinstance(block, VariableCallBlock):
+            return block.getText()
         if not (isinstance(block.children[0], OperationBlock) or isinstance(block.children[1], OperationBlock)):
             return f"({block.children[0].getText()} {block.operation} {block.children[1].getText()})"
         elif not isinstance(block.children[0], OperationBlock):

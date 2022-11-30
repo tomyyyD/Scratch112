@@ -264,9 +264,56 @@ class ConditionalBlock(Block):
         self.rhs = TextBox(x, y, 112, "Right Hand Side")
         self.fill = "pink"
         self.placeholder = TextBox(x, y, "Place blocks", "Blocks")
+        self.comparison = TextBox(x, y, "==", "==, <, >, <=, >= only")
+        self.textBoxes = [self.lhs, self.rhs,
+                          self.comparison, self.placeholder]
+        self.children = [self.lhs, self.rhs, self.comparison, self.placeholder]
 
-    def draw():
-        super().draw()
+    def updateWidth(self):
+        self.width = self.children[1].width + \
+            self.children[0].width + self.children[2].width + 75
+
+    def updateHeight(self):
+        value = self.children[3]
+        if isinstance(value, TextBox):
+            self.height = 60
+            return
+        sum = 0
+        while value:
+            value = value.next
+            sum += 1
+        self.height = 20 + sum * 40
+
+    def draw(self, app, canvas):
+        super().draw(app, canvas)
+        self.updateWidth()
+        self.updateHeight()
+        if isinstance(self.children[0], TextBox):
+            self.children[0].draw(
+                app, canvas, self.x - self.width//2 + self.children[0].width//2 + 10, self.y)
+        else:
+            self.children[0].x = self.x - self.width//2 + \
+                self.children[0].width//2 + 10
+            self.children[0].y = self.y
+            self.children[0].draw(app, canvas)
+        if isinstance(self.children[1], TextBox):
+            self.children[1].draw(
+                app, canvas, self.x + self.width//2 - self.children[1].width//2 - 10, self.y)
+        else:
+            self.children[1].x = self.x + self.width//2 - \
+                self.children[1].width//2 - 10
+            self.children[1].y = self.y
+            self.children[1].draw(app, canvas)
+        self.children[2].draw(app, canvas, self.x -
+                              self.width//2 + self.children[0].width + 47, self.y)
+        if isinstance(self.children[3], TextBox):
+            self.children[3].draw(
+                app, canvas, self.x - self.width//2 + self.children[3].width//2 + 10, self.y + 40)
+        else:
+            self.children[3].x = self.x - \
+                self.width//2 + self.children[3].width//2 + 20
+            self.children[3].y = self.y + 40
+            self.children[3].draw(app, canvas)
 
 
 class ForLoopBlock(Block):

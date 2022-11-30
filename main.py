@@ -18,7 +18,7 @@ def appStarted(app):
 def createGui(app):
     buttonList = [("Function", "yellow"), ("Return", "lightblue"),
                   ("Variable", "red"), ("Conditional", "pink"),
-                  ("For Loop", "violet"), ("Print", "orange"),
+                  ("Loop", "violet"), ("Print", "orange"),
                   ("Add", "green"), ("Subtract", "green"),
                   ("Multiply", "green"), ("Divide", "green"),
                   ("Variable Call", "red")]
@@ -56,7 +56,7 @@ def checkBlock(app, event, block: Block):
                 editting = True
                 return True
         for childBlock in block.children:
-            if checkBlock(app, event, childBlock):
+            if isinstance(childBlock, Block) and checkBlock(app, event, childBlock):
                 return True
             # if mouseOnRectangle(event.x, event.y, childBlock.coords):
             #     childBlock.pickedUp = True
@@ -122,6 +122,28 @@ def dropBlock(app, event, block: Block, otherBlock: Block):
         else:
             return False
 
+    if isinstance(otherBlock, ConditionalBlock) and otherBlock.textBoxes[3] and not (isinstance(block, OperationBlock) or isinstance(block, VariableCallBlock)):
+        if mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[3].coords):
+            otherBlock.linkValueBlock(block, 3)
+            return True
+        if mouseOnRectangle(event.x, event.y, otherBlock.children[3].coords):
+            otherBlock.children[3].linkBlock(block)
+            return True
+    elif isinstance(otherBlock, ConditionalBlock) and (isinstance(block, OperationBlock) or isinstance(block, VariableCallBlock)):
+        for child in otherBlock.children:
+            if dropBlock(app, event, block, child):
+                return True
+        if otherBlock.textBoxes[0] and mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[0].coords):
+            otherBlock.linkValueBlock(block, 0)
+        elif otherBlock.textBoxes[1] and mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[1].coords):
+            otherBlock.linkValueBlock(block, 1)
+    elif isinstance(otherBlock, ConditionalBlock):
+        if mouseOnRectangle(event.x, event.y, otherBlock.placeCoords):
+            otherBlock.linkBlock(block)
+            return True
+        else:
+            return False
+
     # makes otherBlock the parent of block
     # variable call blocks and operation block cannot be stand alone
     # they must be within other blocks
@@ -163,6 +185,14 @@ def dropBlock(app, event, block: Block, otherBlock: Block):
         if otherBlock.textBoxes[0] and mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[0].coords):
             otherBlock.linkValueBlock(block, 0)
             return True
+    elif isinstance(otherBlock, ConditionalBlock):
+        for child in otherBlock.children:
+            if dropBlock(app, event, block, child):
+                return True
+        if otherBlock.textBoxes[0] and mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[0].coords):
+            otherBlock.linkValueBlock(block, 0)
+        elif otherBlock.textBoxes[1] and mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[1].coords):
+            otherBlock.linkValueBlock(block, 1)
     return False
 
 
