@@ -166,6 +166,17 @@ def dropBlock(app, event, block: Block, otherBlock: Block):
     return False
 
 
+def removeBlocks(app, startBlock):
+    for child in startBlock.children:
+        if isinstance(child, Block):
+            removeBlocks(app, child)
+    if startBlock.next is None:
+        app.blocks.remove(startBlock)
+    else:
+        removeBlocks(app, startBlock.next)
+        app.blocks.remove(startBlock)
+
+
 def mouseReleased(app, event):
     # Finds the block being moved
     # block is being moved
@@ -173,7 +184,10 @@ def mouseReleased(app, event):
         if block.pickedUp:
             block.pickedUp = False
             if block.x < 150:
-                app.blocks.remove(block)
+                # app.blocks.remove(block)
+                print(app.blocks)
+                removeBlocks(app, block)
+                print(app.blocks)
                 return
             # links two blocks together
             # other block is the stationary block
@@ -218,7 +232,7 @@ def drawBlocks(app, canvas):
     for block in app.blocks:
         if block.pickedUp:
             movingBlock = block
-        if block.parent:
+        if block.parent or block.valueParent:
             continue
         block.draw(app, canvas)
     if movingBlock is not None:

@@ -34,14 +34,35 @@ The list of internal blocks is:
 - Multiply
 - Variable Call
 
+In order to remove a block from your block space, drag it over to the left so that the blocks center point is on the left side of the line. The block will then be removed.
+
 ## Block Usage
 
 ### Function Block
 
-Clicking on the yellow function button spawns this block. You will receive a prompt on screen to name your function. Once you type a name, the block will spawn. This block is used to create a function which can be called later.
-Any external block can be linked to this block by dragging the other block on top of this block. This will make the block you dragged the first line in the new function you created.
+- Clicking on the yellow function button spawns this block. You will receive a prompt on screen to name your function. Once you type a name, the block will spawn. This block is used to create a function which can be called later.
+- Any external block can be linked to this block by dragging the other block on top of this block. This will make the block you dragged the first line in the new function you created.
 
 ### Variable Assignment
 
-The Variable Assignment block is an external call. This block can be spawned by clicking the red "Variable" button. You will be prompted to assign your variable a name. This is an external block and can be linked to another block by dragging it on top of the other block. Other external blocks can also be linked to this block by dragging that block over your variable block.
-Variable blocks have a default value of 112 in the textbox on the Right side of the block. To modify this value you can click on the textbox and manually input a value or you can place a Variable Call block or any mathematical operation block by dragging that other block on top of the textbox.
+- The Variable Assignment block is an external block. This block can be spawned by clicking the red "Variable" button.
+- You will be prompted to assign your variable a name. After that, the block will spawn.
+- This is an external block and can be linked to another block by dragging it on top of the other block. Other external blocks can also be linked to this block by dragging that block over your variable block.
+- There are two components to a variable block. The textbox on the right hand side and the textbox on the left hand side.
+  - The textbox on the left hand side is where you can modify the variable name and this should only recieve **alphabetical characters as input**.
+  - The textbox on the right hand side is where you can modify the varible's value. This can recieve numerical input as well as alphabetical input if wrapped in single quotes. furthermore internal blocks can be placed in this textbox to modify the variable value.
+- Once a variable is created with a variable assignment block, you will then be able to call that variable with a [Variable Call Block](#variable-call-block)
+
+### For Loops
+
+- This block is an external block spawned by pressing the purple for loop button.
+- An external block. Another external block can be linked to this block by dragging the block over the **upper part of the block** that contains the "Loop {x} times" text. This block can also be linked to other external blocks.
+- A For Loop block consists of two main parts.
+  - A textbox at the top of the block is the Loop Input that accepts **numerical input only** and can be clicked on to modify the value. This corresponds the the number of times this loop will run.
+  - A textbox at the bottom of the block. This textbox is where you can drag and drop other external blocks to have them run inside the loop. External block inside of a loop act the same as they would outside of a loop.
+
+### Variable Call Block
+
+- This block lets you call the value of a variable.
+- This is an internal block, meaning it can be used in math operation blocks, Loop Input, and variable values. It cannot link as the next block in the chain nor can it be linked to.
+- **You are only able to make variable call blocks for variables you have already assigned at least once**

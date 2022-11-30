@@ -119,7 +119,7 @@ class VariableBlock(Block):
                            self.children[0].width + 37, self.y, text="=", font="Times 20", fill="black")
         self.children[0].draw(app, canvas, self.x - self.width //
                               2 + self.children[0].width//2 + 25, self.y)
-        if isinstance(self.children[1], OperationBlock):
+        if isinstance(self.children[1], Block):
             self.children[1].x = self.x + self.width//2 - \
                 self.children[1].width//2 - 25
             self.children[1].y = self.y
@@ -263,6 +263,7 @@ class ConditionalBlock(Block):
         self.lhs = TextBox(x, y, 112, "Left Hand Side")
         self.rhs = TextBox(x, y, 112, "Right Hand Side")
         self.fill = "pink"
+        self.placeholder = TextBox(x, y, "Place blocks", "Blocks")
 
     def draw():
         super().draw()
