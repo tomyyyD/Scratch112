@@ -101,7 +101,7 @@ def mouseDragged(app, event):
 
 
 def dropBlock(app, event, block: Block, otherBlock: Block):
-    if isinstance(otherBlock, ForLoopBlock) and otherBlock.textBoxes[1]:
+    if isinstance(otherBlock, ForLoopBlock) and otherBlock.textBoxes[1] and not (isinstance(block, OperationBlock) or isinstance(block, VariableCallBlock)):
         if mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[1].coords):
             otherBlock.linkValueBlock(block, 1)
             return True
@@ -154,7 +154,6 @@ def dropBlock(app, event, block: Block, otherBlock: Block):
         if not isinstance(otherBlock.children[0], TextBox):
             dropBlock(app, event, block, otherBlock.children[0])
         if otherBlock.textBoxes[0] and mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[0].coords):
-            print("linking")
             otherBlock.linkValueBlock(block, 0)
             return True
     elif isinstance(otherBlock, ForLoopBlock):
@@ -209,7 +208,7 @@ def drawGui(app, canvas):
                             outline="black", width=5)
     canvas.create_text(75, 20, fill="black",
                        text="Blocks", font="Times 30 bold")
-
+    canvas.create_line(0, 280, 150, 280, fill="red", width=5)
     for button in app.buttons:
         button.draw(app, canvas)
 

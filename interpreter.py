@@ -45,7 +45,7 @@ class Interpreter:
             # depth += 1
             # increase depth for nested blocks
             if isinstance(block.children[1], TextBox):
-                string += ("\t" * (depth + 1)) + "pass"
+                string += ("\t" * (depth + 1)) + "pass\n"
             else:
                 string += self.buildString(block.children[1],
                                            depth + 1, block)
@@ -113,5 +113,6 @@ class Interpreter:
         # self.file.close()
         for functionBlock in self.functionBlocks:
             string += f"{functionBlock.getName()}()\n"
+        string += f"print('----------------end of file-----------------')"
         self.file.write(string)
         self.file.close()

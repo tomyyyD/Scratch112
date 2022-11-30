@@ -260,9 +260,12 @@ class ReturnBlock(Block):
 class ConditionalBlock(Block):
     def __init__(self, x, y, leftHandSide, rightHandSide) -> None:
         super().__init__(x, y)
-        self.lhs = leftHandSide
-        self.rhs = rightHandSide
+        self.lhs = TextBox(x, y, 112, "Left Hand Side")
+        self.rhs = TextBox(x, y, 112, "Right Hand Side")
         self.fill = "pink"
+
+    def draw():
+        super().draw()
 
 
 class ForLoopBlock(Block):
@@ -271,7 +274,7 @@ class ForLoopBlock(Block):
         self.range = range
         self.fill = "violet"
         self.loops = TextBox(x, y, 12, "Loops")
-        self.placeholder = TextBox(x, y, "Place block Here", "Blocks")
+        self.placeholder = TextBox(x, y, "Place blocks", "Blocks")
         self.textBoxes = [self.loops, self.placeholder]
         self.children = [self.loops, self.placeholder]
 
