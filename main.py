@@ -30,8 +30,11 @@ def createGui(app):
         app.buttons.append(button)
         index += 1
     runButton = Button("run", "green", app.width -
-                       70, 20, app.width - 20, 70, 11)
+                       100, 20, app.width - 20, 70, 11)
     app.buttons.append(runButton)
+    clearAllButton = Button(
+        "Clear All", "red", app.width - 100, 90, app.width - 20, 140, 12)
+    app.buttons.append(clearAllButton)
 
 
 def mouseOnBlock(block, x, y):

@@ -1,8 +1,8 @@
-def doStuff():
-	y = 0
+def hjklhbjhkl():
+	c = 1
 	for i in range(100):
-		if (y + 50) >= 112:
-			print((y + 112))
-		y = (y + 1)
-doStuff()
+		if c == 50:
+			print(c)
+		c = (c + 1)
+hjklhbjhkl()
 print('----------------end of file-----------------')

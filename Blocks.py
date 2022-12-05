@@ -9,6 +9,7 @@ class Block:
         self.fill = "green"
         self.font = "times 20"
         self.width = 150
+        self.totalHeight = 40
         self.height = 20
         self.textBoxes = []
         self.coords = [[self.x - self.width//2, self.y - 20],
@@ -22,6 +23,7 @@ class Block:
         self.parentPosition = None
 
     def updateCoords(self):
+        self.totalHeight = 20 + self.height
         self.coords = [[self.x - self.width//2, self.y - 20],
                        [self.x + self.width//2, self.y + self.height]]
         self.placeCoords = [[self.x - self.width//2, self.y - 20],
@@ -280,9 +282,9 @@ class ConditionalBlock(Block):
             return
         sum = 0
         while value:
+            sum += value.totalHeight
             value = value.next
-            sum += 1
-        self.height = 20 + sum * 40
+        self.height = 20 + sum
 
     def draw(self, app, canvas):
         super().draw(app, canvas)
@@ -348,7 +350,6 @@ class ForLoopBlock(Block):
                 self.width//2 + self.children[1].width//2 + 20
             self.children[1].y = self.y + 40
             self.children[1].draw(app, canvas)
-        # self.children[1].next.draw(app, canvas)
 
     def updateHeight(self):
         value = self.children[1]
@@ -357,6 +358,11 @@ class ForLoopBlock(Block):
             return
         sum = 0
         while value:
+            sum += value.totalHeight
             value = value.next
-            sum += 1
-        self.height = 20 + sum * 40
+        self.height = 20 + sum
+
+
+class functionCallblock(Block):
+    def __init__(self, x, y):
+        super().__init__(x, y)
