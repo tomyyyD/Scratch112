@@ -3,7 +3,7 @@ from Blocks import *
 
 class Interpreter:
     def __init__(self, blocksList):
-        self.file = open("output.py", 'w')
+        self.file = open("output.py", 'w+')
         self.functionBlocks = []
         for block in blocksList:
             if isinstance(block, FunctionBlock):
