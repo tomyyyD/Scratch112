@@ -29,7 +29,7 @@ class Interpreter:
                 "\t" * depth) + f"{block.children[0].getText()} = {self.buildOperationString(block.children[1])}\n"
         elif isinstance(block, ReturnBlock):
             string += ("\t" * depth) + \
-                f"return {block.textInput.getText()}\n"
+                f"return {self.buildOperationString(block.children[0])}\n"
         elif isinstance(block, PrintBlock):
             string += (
                 "\t" * depth) + f"print({self.buildOperationString(block.children[0])})\n"

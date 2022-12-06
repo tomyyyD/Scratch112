@@ -147,12 +147,14 @@ def dropBlock(app, event, block: Block, otherBlock: Block):
         else:
             return False
 
+    # print("out of for loop and conditionals tests")
     # makes otherBlock the parent of block
     # variable call blocks and operation block cannot be stand alone
     # they must be within other blocks
     if not (isinstance(block, VariableCallBlock) or isinstance(block, OperationBlock)):
-        otherBlock.linkBlock(block)
-        return True
+        if not isinstance(otherBlock, ReturnBlock):
+            otherBlock.linkBlock(block)
+            return True
     # linking block to values of variable blocks
     # the only blocks that can be made a value block are Variable calls and operations
     elif (isinstance(otherBlock, VariableBlock)):
@@ -196,6 +198,14 @@ def dropBlock(app, event, block: Block, otherBlock: Block):
             otherBlock.linkValueBlock(block, 0)
         elif otherBlock.textBoxes[1] and mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[1].coords):
             otherBlock.linkValueBlock(block, 1)
+    elif isinstance(otherBlock, ReturnBlock):
+        for child in otherBlock.children:
+            if dropBlock(app, event, block, child):
+                return True
+        if otherBlock.textBoxes[0] and mouseOnRectangle(event.x, event.y, otherBlock.textBoxes[0].coords):
+            otherBlock.linkValueBlock(block, 0)
+            # print("linking to return")
+            return True
     return False
 
 
@@ -218,9 +228,9 @@ def mouseReleased(app, event):
             block.pickedUp = False
             if block.x < 150:
                 # app.blocks.remove(block)
-                print(app.blocks)
+                # print(app.blocks)
                 removeBlocks(app, block)
-                print(app.blocks)
+                # print(app.blocks)
                 return
             # links two blocks together
             # other block is the stationary block
@@ -229,12 +239,12 @@ def mouseReleased(app, event):
                     if mouseOnRectangle(event.x, event.y, otherBlock.coords):
                         # assign variable call block to return statement
                         # return will only return variables
-                        if isinstance(otherBlock, ReturnBlock):
-                            if isinstance(block, VariableCallBlock):
-                                otherBlock.value = block
-                                return
-                        else:
-                            dropBlock(app, event, block, otherBlock)
+                        # if isinstance(otherBlock, ReturnBlock):
+                        #     if isinstance(block, VariableCallBlock):
+                        #         otherBlock.value = block
+                        #         return
+                        # else:
+                        dropBlock(app, event, block, otherBlock)
 
 
 def keyPressed(app, event):

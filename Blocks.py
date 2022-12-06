@@ -242,21 +242,23 @@ class ReturnBlock(Block):
         # self.value can be a variable block
         self.textInput = TextBox(x, y, value, "Print Value")
         self.textBoxes = [self.textInput]
-
+        self.children = [self.textInput]
         self.value = value
         self.fill = "lightblue"
 
     def draw(self, app, canvas):
         super().draw(app, canvas)
+        self.updateWidth()
         canvas.create_text(self.x - self.width//2 + 35, self.y,
                            text="Return", font=self.font, fill="black")
-        if isinstance(self.value, VariableCallBlock):
-            self.value.x = self.x + self.value.width//2
-            self.value.y = self.y
-            self.value.draw(app, canvas)
+        if isinstance(self.children[0], TextBox):
+            self.children[0].draw(app, canvas, self.x +
+                                  self.children[0].width//2, self.y)
         else:
-            canvas.create_text(self.x + self.width//2 -
-                               30, self.y, text=self.value, font=self.font, fill="black")
+            self.children[0].x = self.x + self.width//2 - \
+                self.children[0].width//2 - 10
+            self.children[0].y = self.y
+            self.children[0].draw(app, canvas)
 
 
 class ConditionalBlock(Block):

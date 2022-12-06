@@ -61,6 +61,9 @@ class Button:
 
             case 11:
                 interpreter = Interpreter(app.blocks)
-                exec(open('./output.py').read())
+                try:
+                    exec(open('./output.py').read())
+                except Exception as e:
+                    print(e)
             case 12:
                 app.blocks = []
