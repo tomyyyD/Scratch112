@@ -9,7 +9,7 @@ from interpreter import Interpreter
 
 
 def appStarted(app):
-    app.blocks = []
+    app.blocks = [OnRun(300, 100)]
     app.buttons = []
     createGui(app)
     app.offset = (0, 0)
@@ -21,7 +21,7 @@ def createGui(app):
                   ("Loop", "violet"), ("Print", "orange"),
                   ("Add", "green"), ("Subtract", "green"),
                   ("Multiply", "green"), ("Divide", "green"),
-                  ("Variable Call", "red")]
+                  ("Variable Call", "red"), ("Function Call", "yellow")]
     startX = 45
     index = 0
     for button in buttonList:
@@ -30,10 +30,10 @@ def createGui(app):
         app.buttons.append(button)
         index += 1
     runButton = Button("run", "green", app.width -
-                       100, 20, app.width - 20, 70, 11)
+                       100, 20, app.width - 20, 70, 12)
     app.buttons.append(runButton)
     clearAllButton = Button(
-        "Clear All", "red", app.width - 100, 90, app.width - 20, 140, 12)
+        "Clear All", "red", app.width - 100, 90, app.width - 20, 140, 13)
     app.buttons.append(clearAllButton)
 
 
@@ -151,7 +151,7 @@ def dropBlock(app, event, block: Block, otherBlock: Block):
     # makes otherBlock the parent of block
     # variable call blocks and operation block cannot be stand alone
     # they must be within other blocks
-    if not (isinstance(block, VariableCallBlock) or isinstance(block, OperationBlock)):
+    if not (isinstance(block, VariableCallBlock) or isinstance(block, OperationBlock) or isinstance(block, FunctionCallBlock)):
         if not isinstance(otherBlock, ReturnBlock):
             otherBlock.linkBlock(block)
             return True
@@ -235,7 +235,7 @@ def mouseReleased(app, event):
             # links two blocks together
             # other block is the stationary block
             for otherBlock in app.blocks:
-                if block != otherBlock and not isinstance(block, FunctionBlock):
+                if block != otherBlock and not (isinstance(block, FunctionBlock) or isinstance(block, OnRun)):
                     if mouseOnRectangle(event.x, event.y, otherBlock.coords):
                         # assign variable call block to return statement
                         # return will only return variables

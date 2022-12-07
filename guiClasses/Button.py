@@ -58,12 +58,22 @@ class Button:
                         app.blocks.append(
                             VariableCallBlock(spawnX, spawnY, block))
                         break
-
             case 11:
+                name = app.getUserInput("What Function are you calling?")
+                print("looking for block")
+                if name is None:
+                    return
+                for block in app.blocks:
+                    if isinstance(block, FunctionBlock) and name == block.nameInput.getText():
+                        print("found block")
+                        app.blocks.append(
+                            FunctionCallBlock(spawnX, spawnY, block))
+                        break
+            case 12:
                 interpreter = Interpreter(app.blocks)
                 try:
                     exec(open('./output.py').read())
                 except Exception as e:
                     print(e)
-            case 12:
-                app.blocks = []
+            case 13:
+                app.blocks = [OnRun(300, 100)]

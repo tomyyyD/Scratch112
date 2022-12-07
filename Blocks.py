@@ -73,6 +73,20 @@ class Block:
         self.width = width
 
 
+class OnRun(Block):
+    def __init__(self, x, y) -> None:
+        super().__init__(x, y)
+        self.fill = "yellow"
+        self.width = 200
+
+    def draw(self, app, canvas):
+        super().draw(app, canvas)
+        canvas.create_rectangle(self.x - self.width//2 + 10, self.y -
+                                self.height, self.x, self.y + self.height, fill="green", width=0)
+        canvas.create_text(self.x - self.width//2 + 52, self.y,
+                           text="On Run", fill="black", font=self.font)
+
+
 class FunctionBlock(Block):
     def __init__(self, x, y, name) -> None:
         super().__init__(x, y)
@@ -96,6 +110,27 @@ class FunctionBlock(Block):
                      index * self.width + 15, self.y)
 
 # variable addignment block
+
+
+class FunctionCallBlock(Block):
+    def __init__(self, x, y, block) -> None:
+        super().__init__(x, y)
+        self.link = block
+        self.name = self.link.textBoxes[0].getText()
+
+        # self.value should be able to be an operation block or a textbox
+        self.fill = "yellow"
+
+        self.width = len(self.link.nameInput.getText()) * 5 + 50
+
+    def draw(self, app, canvas):
+        self.name = self.link.nameInput.getText()
+        super().draw(app, canvas)
+        canvas.create_text(self.x, self.y, text=self.name,
+                           font="Times 20", fill="black")
+
+    def getText(self):
+        return self.name
 
 
 class VariableBlock(Block):
@@ -142,7 +177,7 @@ class VariableCallBlock(Block):
         # self.value should be able to be an operation block or a textbox
         self.fill = "red"
 
-        self.width = len(self.fill) * 5 + 50
+        self.width = self.link.children[0].width + 50
 
     def draw(self, app, canvas):
         self.name = self.link.children[0].getText()
